@@ -4,5 +4,17 @@ services:
     build: "./backend"
     volumes:
       - "./backend/src:/usr/src/app/src"
+    depends_on:
+      - db
     ports:
       - "4001:4001"
+  db:
+    image: mariadb
+    volumes:
+      - "./db:/var/lib/mysql"
+    environment:
+        MYSQL_ROOT_PASSWORD: secret
+        MYSQL_DATABASE: app
+        MYSQL_USER: app
+        MYSQL_PASSWORD: secret
+
