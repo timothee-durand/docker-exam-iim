@@ -1,27 +1,42 @@
 version: "3.9"
 services:
+  db:
+    image: mariadb
+    restart: always
+    volumes:
+      - "./db:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-secret}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE:-app}"
+      MYSQL_USER: "${MYSQL_USER:-app}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD:-secret}"
+
   backend:
+    restart: always
     build: "./backend"
     volumes:
       - "./backend/src:/app/src"
+    environment:
+      MYSQL_DATABASE: "${MYSQL_DATABASE:-app}"
+      MYSQL_USER: "${MYSQL_USER:-app}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD:-secret}"
+      MYSQL_HOST: "${MYSQL_HOST:-db}"
+      MYSQL_PORT: "${MYSQL_PORT:-3306}"
+      API_PORT: "${API_PORT:-4001}"
     depends_on:
       - db
     ports:
       - "4001:4001"
 
-  db:
-    image: mariadb
-    volumes:
-      - "./db:/var/lib/mysql"
-    environment:
-        MYSQL_ROOT_PASSWORD: secret
-        MYSQL_DATABASE: app
-        MYSQL_USER: app
-        MYSQL_PASSWORD: secret
+
+
+
   frontend:
     build: "./frontend"
     volumes:
       - "./frontend/src:/app/src"
       - "./frontend/public:/app/public"
+    environment:
+      REACT_APP_API_PORT: "${API_PORT:-4001}"
     ports:
       - "4000:3000"

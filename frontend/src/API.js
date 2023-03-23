@@ -1,9 +1,8 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-    baseURL: "http://localhost:4001",
+    baseURL: "http://localhost:" + process.env.REACT_APP_API_PORT,
 })
-
 
 export const getTodos = async () => {
     return apiClient.get("/todos");
